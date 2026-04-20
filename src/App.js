@@ -71,9 +71,10 @@ export default function App() {
     };
 
     const analyzeImage = async () => {
-        if(!image) return;
-        setLoading(true);
+    if(!image) return;
+    setLoading(true);
 
+    try {
         const formData = new FormData();
         formData.append("image", image);
         formData.append("description", description);
@@ -83,14 +84,22 @@ export default function App() {
             {method: "POST", body: formData}
         );
 
-        const data = await res.json();
-        setCalories(data.calories);
-        setProtein(data.protein);
-        setCarbs(data.carbs);
-        setFat(data.fat);
+        if (!res.ok) {
+            throw new Error(`Error en la solicitud: ${res.status}`);
+        }
 
+        const data = await res.json();
+        setCalories(data.calories || "");
+        setProtein(data.protein || "");
+        setCarbs(data.carbs || "");
+        setFat(data.fat || "");
+    } catch (error) {
+        console.error("Error al analizar la imagen:", error);
+        alert("Error al analizar la imagen. Revisa la consola para más detalles.");
+    } finally {
         setLoading(false);
-    };
+    }
+};
 
     const saveWeight = () => {
         if (!weight) return;
