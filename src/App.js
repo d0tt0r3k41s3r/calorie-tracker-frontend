@@ -9,6 +9,7 @@ const TARGETS = { calories: 2050, protein: 165, carbs: 210, fat: 60 };
 
 const themeLight = createTheme({ palette: { primary: { main: '#ff5722' }, secondary: { main: '#4caf50' } } });
 const themeDark = createTheme({ palette: { mode: 'dark', primary: { main: '#ff5722' }, secondary: { main: '#4caf50' } } });
+const API_BASE = 'https://https://calorie-tracker-backend-production-d029.up.railway.app:3001';
 
 export default function App() {
     const [logged, setLogged] = useState(false);
@@ -44,19 +45,19 @@ export default function App() {
     }, [token]);
 
     const loadUserData = async () => {
-        // Asume endpoint para cargar datos del usuario
-        const res = await fetch('/api/user/data', { headers: { Authorization: `Bearer ${token}` } });
+        // Endpoint de datos de usuario en el backend
+        const res = await fetch(`${API_BASE}/user/data`, { headers: { Authorization: `Bearer ${token}` } });
         const data = await res.json();
         setEntries(data.entries || {});
         setWeights(data.weights || {});
     };
 
     const handleAuth = async () => {
-        const endpoint = isRegister ? '/api/register' : '/api/login';
+        const endpoint = `${API_BASE}/${isRegister ? 'register' : 'login'}`;
         const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email: username, password })
         });
         const data = await res.json();
         if (res.ok) {
@@ -64,7 +65,7 @@ export default function App() {
             localStorage.setItem('token', data.token);
             setLogged(true);
         } else {
-            alert(data.message);
+            alert(data.error || data.message || 'Error en autenticación');
         }
     };
 
@@ -88,10 +89,10 @@ export default function App() {
         const formData = new FormData();
         formData.append("image", image);
         formData.append("description", description);
-        const res = await fetch("https://calorie-tracker-backend-production-d029.up.railway.app/analyze-food", {
+        const res = await fetch(`${API_BASE}/analyze-food`, {
             method: "POST",
             body: formData,
-            headers: { Authorization: `Bearer ${token}` } // Si el backend lo requiere
+            headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
         setCalories(data.calories || "");
@@ -110,7 +111,7 @@ export default function App() {
     };
 
     const saveToBackend = async (key, value) => {
-        await fetch('/api/user/data', {
+        await fetch(`${API_BASE}/user/data`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ [key]: value })
@@ -136,7 +137,7 @@ export default function App() {
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                         <Card sx={{ p: 3 }}>
                             <Typography variant="h5" gutterBottom>{isRegister ? 'Registro' : 'Login'}</Typography>
-                            <TextField label="Usuario" value={username} onChange={e => setUsername(e.target.value)} fullWidth sx={{ mb: 1 }} />
+                            <TextField label="Email" value={username} onChange={e => setUsername(e.target.value)} fullWidth sx={{ mb: 1 }} />
                             <TextField type="password" label="Contraseña" value={password} onChange={e => setPassword(e.target.value)} fullWidth sx={{ mb: 1 }} />
                             <Button variant="contained" onClick={handleAuth} fullWidth>{isRegister ? 'Registrarse' : 'Iniciar Sesión'}</Button>
                             <Button onClick={() => setIsRegister(!isRegister)} sx={{ mt: 1 }}>{isRegister ? 'Ya tengo cuenta' : 'Crear cuenta'}</Button>
