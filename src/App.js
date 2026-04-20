@@ -9,7 +9,7 @@ const TARGETS = { calories: 2050, protein: 165, carbs: 210, fat: 60 };
 
 const themeLight = createTheme({ palette: { primary: { main: '#ff5722' }, secondary: { main: '#4caf50' } } });
 const themeDark = createTheme({ palette: { mode: 'dark', primary: { main: '#ff5722' }, secondary: { main: '#4caf50' } } });
-const API_BASE = 'https://https://calorie-tracker-backend-production-d029.up.railway.app:3001';
+const API_BASE = 'https://calorie-tracker-backend-production-d029.up.railway.app:3001';
 
 export default function App() {
     const [logged, setLogged] = useState(false);
