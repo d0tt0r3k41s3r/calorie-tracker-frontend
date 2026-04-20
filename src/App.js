@@ -63,7 +63,7 @@ export default function App() {
         setEntries({
             ...entries,
             [date]: [
-                ...App(entries[date] || []),
+                ...(entries[date] || []),
                 {food, calories, protein,carbs,fat}
             ]
         });
@@ -98,7 +98,7 @@ export default function App() {
         setWeight("");
     };
 
-    const totals = (entires[date] || []).reduce(
+    const totals = (entries[date] || []).reduce(
         (a, e) => ({
             calories: a.calories + Number(e.calories),
             protein: a.protein + Number(e.protein),
@@ -115,7 +115,7 @@ export default function App() {
             <input type="date" value={date} onChange={e => setDate(e.target.value)} />
 
             <h2>Analizar comida con IA</h2>
-            <input type="file" onchange={e => setImage(e.target.files[0])} />
+            <input type="file" onChange={e => setImage(e.target.files[0])} />
             <input
                 placeholder="Description (ej: 200g arroz + 150g pollo)"
                 value={description}
